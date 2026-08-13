@@ -76,7 +76,9 @@ if __name__ == "__main__":
     sentences = [
         "Hi.",
         "I love learning about machine translation.",
-        "This is my final year project."
+        "This is my final year project.",
+        "i would like to order 500 orages for ₹60 ",
+        " OOPs!!!"
     ]
     for original, translated in zip(sentences, translator.translate(sentences)):
         print(original, "→", translated)
