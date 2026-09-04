@@ -1,6 +1,6 @@
 import logging
 from transformers import MarianMTModel, MarianTokenizer
-
+from model_manager import ModelManager
 # Configure logging once, at the top of the file
 logging.basicConfig(
     level=logging.INFO,
@@ -10,13 +10,12 @@ logger = logging.getLogger(__name__)
 
 
 class Translator:
-    def __init__(self, model_name: str):
-        logger.info(f"Loading model: {model_name}")
-        self.tokenizer = MarianTokenizer.from_pretrained(model_name)
-        self.model = MarianMTModel.from_pretrained(model_name)
+    def __init__(self, tokenizer, model):
+        logger.info("Received pre-loaded tokenizer and model.")
+        self.tokenizer = tokenizer
+        self.model = model
         self.model.eval()
-        logger.info("Model loaded successfully.")
-
+        logger.info("Translator ready.")
     def _validate(self, text: str) -> str:
         if text is None:
             logger.error("Validation failed: input was None.")
@@ -67,8 +66,11 @@ class Translator:
 
 
 if __name__ == "__main__":
-    model_name = "Helsinki-NLP/opus-mt-en-fr"
-    translator = Translator(model_name)
+    manager = ModelManager()
+
+    tokenizer, model = manager.get_model("fr")
+
+    translator = Translator(tokenizer, model)
 
     sentence = "Hi."
     print(sentence, "→", translator.translate(sentence))
@@ -77,8 +79,9 @@ if __name__ == "__main__":
         "Hi.",
         "I love learning about machine translation.",
         "This is my final year project.",
-        "i would like to order 500 orages for ₹60 ",
-        " OOPs!!!"
+        "i would like to order 500 oranges for ₹60",
+        "Oops!!!"
     ]
+
     for original, translated in zip(sentences, translator.translate(sentences)):
         print(original, "→", translated)
